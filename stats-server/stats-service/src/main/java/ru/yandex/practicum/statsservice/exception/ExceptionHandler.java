@@ -12,12 +12,18 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler({ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationError(final ValidationException exception) {
-        return new ErrorResponse("Ошибка валидации", exception.getMessage());
+        return new ErrorResponse("Ошибка валидации: ", exception.getMessage());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler({IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationError(final IllegalArgumentException exception) {
-        return new ErrorResponse("Ошибка аргументов", exception.getMessage());
+    public ErrorResponse handleArgumentError(final IllegalArgumentException exception) {
+        return new ErrorResponse("Ошибка аргументов: ", exception.getMessage());
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler({RuntimeException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleInternalError(final RuntimeException exception) {
+        return new ErrorResponse("Неизвестная ошибка: ", exception.getMessage());
     }
 }

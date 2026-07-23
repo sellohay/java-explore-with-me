@@ -27,7 +27,7 @@ public class EndpointHitMapper {
         endpointHitDto.setApp(endpointHit.getApp());
         endpointHitDto.setUri(endpointHit.getUri());
         endpointHitDto.setIp(endpointHit.getIp());
-        endpointHitDto.setTimestamp(endpointHit.getTimestamp());
+        endpointHitDto.setTimestamp(String.valueOf(endpointHit.getTimestamp()));
         return endpointHitDto;
     }
 }
