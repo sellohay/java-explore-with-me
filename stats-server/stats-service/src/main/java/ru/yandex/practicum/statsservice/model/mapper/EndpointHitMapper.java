@@ -9,15 +9,14 @@ import java.time.format.DateTimeFormatter;
 
 public class EndpointHitMapper {
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public static EndpointHit mapToEndpointHit(NewEndpointHitDto newEndpointHitDto) {
         EndpointHit endpointHit = new EndpointHit();
         endpointHit.setApp(newEndpointHitDto.getApp());
         endpointHit.setUri(newEndpointHitDto.getUri());
         endpointHit.setIp(newEndpointHitDto.getIp());
-        LocalDateTime timestamp = LocalDateTime.parse(
-                newEndpointHitDto.getTimestamp(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        endpointHit.setTimestamp(timestamp);
+        endpointHit.setTimestamp(LocalDateTime.parse(newEndpointHitDto.getTimestamp(), formatter));
         return endpointHit;
     }
 
@@ -27,7 +26,7 @@ public class EndpointHitMapper {
         endpointHitDto.setApp(endpointHit.getApp());
         endpointHitDto.setUri(endpointHit.getUri());
         endpointHitDto.setIp(endpointHit.getIp());
-        endpointHitDto.setTimestamp(String.valueOf(endpointHit.getTimestamp()));
+        endpointHitDto.setTimestamp(endpointHit.getTimestamp().format(formatter));
         return endpointHitDto;
     }
 }

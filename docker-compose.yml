@@ -35,6 +35,10 @@ services:
     depends_on:
       ewm-db:
         condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345
 
   ewm-db:
     image: postgres:16.1

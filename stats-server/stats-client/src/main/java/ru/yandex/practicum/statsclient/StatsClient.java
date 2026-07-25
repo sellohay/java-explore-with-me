@@ -8,26 +8,27 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.yandex.practicum.statsdto.dtos.NewEndpointHitDto;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class StatsClient {
     private final RestTemplate restTemplate;
+    private final String serverUrl;
 
-    public StatsClient(RestTemplate restTemplate) {
+    public StatsClient(RestTemplate restTemplate, String serverUrl) {
         this.restTemplate = restTemplate;
+        this.serverUrl = serverUrl;
     }
 
     @Autowired
     public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
+        this.serverUrl = serverUrl;
         this.restTemplate = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
                 .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
@@ -40,24 +41,18 @@ public class StatsClient {
     }
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
-        String encodedStart = URLEncoder.encode(start, StandardCharsets.UTF_8);
-        String encodedEnd = URLEncoder.encode(end, StandardCharsets.UTF_8);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(serverUrl)
+                .path("/stats")
+                .queryParam("start", start)
+                .queryParam("end", end);
 
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("start", encodedStart);
-        parameters.put("end", encodedEnd);
         if (uris != null && !uris.isEmpty()) {
-            parameters.put("uris", String.join(",", uris));
-        } else {
-            parameters.put("uris", "");
+            builder.queryParam("uris", uris);
         }
+        builder.queryParam("unique", unique != null ? unique : false);
 
-        parameters.put("unique", unique != null ? unique : false);
-        return restTemplate.getForEntity(
-                "/stats?start={start}&end={end}&uris={uris}&unique={unique}",
-                Object.class,
-                parameters
-        );
+        URI uri = builder.build().encode().toUri();
+        return restTemplate.getForEntity(uri, Object.class);
     }
 
 }

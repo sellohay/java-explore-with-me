@@ -1,6 +1,7 @@
 package ru.yandex.practicum.statsservice.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.statsdto.dtos.EndpointHitDto;
 import ru.yandex.practicum.statsdto.dtos.NewEndpointHitDto;
 import ru.yandex.practicum.statsdto.dtos.ViewStatsDto;
@@ -20,12 +21,14 @@ public class EndpointHitService {
         this.endpointHitRepository = endpointHitRepository;
     }
 
+    @Transactional
     public EndpointHitDto createEndpointHit(NewEndpointHitDto newEndpointHitDto) {
         EndpointHit newHit = EndpointHitMapper.mapToEndpointHit(newEndpointHitDto);
         newHit = endpointHitRepository.save(newHit);
         return EndpointHitMapper.mapToEndpointHitDto(newHit);
     }
 
+    @Transactional(readOnly = true)
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         if (start.isAfter(end)) {
             throw new IllegalArgumentException("Дата начала не может быть позже даты окончания");
