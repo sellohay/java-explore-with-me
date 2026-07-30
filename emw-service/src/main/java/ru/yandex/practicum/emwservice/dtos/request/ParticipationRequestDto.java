@@ -12,9 +12,9 @@ public class ParticipationRequestDto {
 
     private Long id;
     @JsonProperty("requester")
-    private Long requester_id;
+    private Long requesterId;
     @JsonProperty("event")
-    private Long event_id;
+    private Long eventId;
     private String created;
     private String status;
 }

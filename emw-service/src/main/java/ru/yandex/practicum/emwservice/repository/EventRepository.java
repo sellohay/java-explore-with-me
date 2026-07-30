@@ -2,7 +2,6 @@ package ru.yandex.practicum.emwservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import ru.yandex.practicum.emwservice.model.Event;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query(value = """
         SELECT e.* FROM events e
         WHERE e.state = 'PUBLISHED'
-          AND (:text IS NULL 
+          AND (:text IS NULL
                OR LOWER(e.annotation) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%'))
                OR LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%')))
           AND (:categories IS NULL OR e.category_id IN (:categories))
@@ -47,7 +46,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query(value = """
         SELECT e.* FROM events e
         WHERE e.state = 'PUBLISHED'
-          AND (:text IS NULL 
+          AND (:text IS NULL
                OR LOWER(e.annotation) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%'))
                OR LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%')))
           AND (:categories IS NULL OR e.category_id IN (:categories))
@@ -81,7 +80,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
           AND (CAST(:rangeStart AS timestamp) IS NULL OR event_date >= CAST(:rangeStart AS timestamp))
           AND (CAST(:rangeEnd AS timestamp) IS NULL OR event_date <= CAST(:rangeEnd AS timestamp))
         ORDER BY id ASC
-        LIMIT :size 
+        LIMIT :size
         OFFSET :from
     """, nativeQuery = true)
     List<Event> findAdminEvents(List<Long> users, List<String> states, List<Long> categories,
