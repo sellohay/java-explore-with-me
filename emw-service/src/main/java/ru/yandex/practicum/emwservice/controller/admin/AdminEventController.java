@@ -1,5 +1,6 @@
 package ru.yandex.practicum.emwservice.controller.admin;
 
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.emwservice.dtos.event.EventFullDto;
@@ -33,7 +34,8 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEventAdmin(@PathVariable Long eventId, @RequestBody UpdateEventAdminRequest request) {
+    public EventFullDto updateEventAdmin(@PathVariable Long eventId,
+                                         @Valid @RequestBody UpdateEventAdminRequest request) {
         return eventService.updateEventAdmin(eventId, request);
     }
 }

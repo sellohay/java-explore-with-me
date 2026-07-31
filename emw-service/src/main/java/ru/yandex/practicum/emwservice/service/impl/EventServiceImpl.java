@@ -1,11 +1,11 @@
 package ru.yandex.practicum.emwservice.service.impl;
 
+import jakarta.validation.ValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.emwservice.dtos.event.*;
 import ru.yandex.practicum.emwservice.dtos.mappers.EventMapper;
-import ru.yandex.practicum.emwservice.exception.DateCreationException;
 import ru.yandex.practicum.emwservice.exception.NotFoundException;
 import ru.yandex.practicum.emwservice.exception.UpdateEventException;
 import ru.yandex.practicum.emwservice.exception.UpdateRequestException;
@@ -57,7 +57,12 @@ public class EventServiceImpl implements EventService {
         if (now.plusHours(2).isAfter(newEventDto.getEventDate())) {
             String errorMessage = String.format("Field: eventDate. Error: must be at least " +
                             "2 hours after now. Value: %s", newEventDto.getEventDate());
-            throw new DateCreationException(errorMessage);
+            throw new ValidationException(errorMessage);
+        }
+        if (newEventDto.getParticipantLimit() < 0) {
+            String errorMessage = String.format("Field: participantLimit. Error: must be at least " +
+                    "0. Value: %s", newEventDto.getParticipantLimit());
+            throw new ValidationException(errorMessage);
         }
 
         Event event = EventMapper.newToEvent(newEventDto);
@@ -84,7 +89,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Long id) {
         Event event = getEventEntity(id);
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new UpdateEventException("Event with id " + id + " has not been published");
+            throw new NotFoundException("Event with id " + id + " has not been published");
         }
         return mapToEventFullDto(event);
     }
@@ -143,6 +148,11 @@ public class EventServiceImpl implements EventService {
         if (event.getState().equals(EventState.PUBLISHED)) {
             throw new UpdateRequestException("Only pending or canceled events can be changed");
         }
+        if (request.getParticipantLimit() != null && request.getParticipantLimit() < 0) {
+            String errorMessage = String.format("Field: participantLimit. Error: must be at least " +
+                    "0. Value: %s", request.getParticipantLimit());
+            throw new ValidationException(errorMessage);
+        }
         event = EventMapper.updateEventFieldsUser(event, request);
         if (request.getCategoryId() != null) {
             Category category = categoryService.getCategoryEntity(request.getCategoryId());
@@ -167,7 +177,7 @@ public class EventServiceImpl implements EventService {
         if (request.getEventDate() != null && now.plusHours(1).isAfter(request.getEventDate())) {
             String errorMessage = String.format("Field: eventDate. Error: must be at least " +
                     "1 hour after now. Value: %s", request.getEventDate());
-            throw new DateCreationException(errorMessage);
+            throw new ValidationException(errorMessage);
         }
         StateActionAdmin action = request.getStateAction();
         if (action.equals(StateActionAdmin.PUBLISH_EVENT) && !event.getState().equals(EventState.PENDING)) {

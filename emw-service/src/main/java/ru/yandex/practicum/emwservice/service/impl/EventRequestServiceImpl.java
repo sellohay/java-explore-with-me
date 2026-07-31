@@ -63,7 +63,7 @@ public class EventRequestServiceImpl implements EventRequestService {
 
         //cancel all if required
         if (request.getStatus().equals(RequestUpdateStatus.REJECTED)) {
-            requests.forEach(req -> req.setStatus(RequestState.CANCELLED));
+            requests.forEach(req -> req.setStatus(RequestState.REJECTED));
             rejected.addAll(requests);
         } else {
             //check limit
@@ -80,7 +80,7 @@ public class EventRequestServiceImpl implements EventRequestService {
                     confirmed.add(req);
                     currentConfirmed++;
                 } else {
-                    req.setStatus(RequestState.CANCELLED);
+                    req.setStatus(RequestState.REJECTED);
                     rejected.add(req);
                 }
             }
@@ -89,7 +89,7 @@ public class EventRequestServiceImpl implements EventRequestService {
             if (limit != 0 && currentConfirmed >= limit) {
                 List<Request> pendingRequests = requestRepository.findAllByEventIdAndStatus(eventId, RequestState.PENDING);
                 for (Request pendingRequest : pendingRequests) {
-                    pendingRequest.setStatus(RequestState.CANCELLED);
+                    pendingRequest.setStatus(RequestState.REJECTED);
                     rejected.add(pendingRequest);
                 }
                 requestRepository.saveAll(pendingRequests);

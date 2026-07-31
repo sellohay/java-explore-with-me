@@ -6,6 +6,7 @@ import ru.yandex.practicum.emwservice.model.util.EventState;
 import ru.yandex.practicum.emwservice.model.util.StateAction;
 import ru.yandex.practicum.emwservice.model.util.StateActionAdmin;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class EventMapper {
@@ -41,6 +42,8 @@ public class EventMapper {
 
         if (event.getPublishedOn() != null) {
             eventFullDto.setPublishedOn(event.getPublishedOn().format(FORMATTER));
+        } else {
+            eventFullDto.setPublishedOn(null);
         }
         eventFullDto.setRequestModeration(event.isRequestModeration());
         eventFullDto.setState(event.getState().name());
@@ -65,8 +68,9 @@ public class EventMapper {
         if (request.getStateAction() != null) {
             if (request.getStateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
                 event.setState(EventState.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
             } else {
-                event.setState(EventState.CANCELLED);
+                event.setState(EventState.CANCELED);
             }
         }
         return event;
@@ -76,7 +80,7 @@ public class EventMapper {
         event = updateEventFields(event, request);
         if (request.getStateAction() != null) {
             if (request.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
-                event.setState(EventState.CANCELLED);
+                event.setState(EventState.CANCELED);
             } else {
                 event.setState(EventState.PENDING);
             }

@@ -3,7 +3,7 @@ package ru.yandex.practicum.emwservice.model.util;
 public enum EventState {
     PENDING,
     PUBLISHED,
-    CANCELLED;
+    CANCELED;
 
     public static EventState fromString(String state) {
         try {

@@ -139,7 +139,7 @@ public class RequestControllerTests {
         mockMvc.perform(patch("/users/{userId}/requests/{requestId}/cancel", requester.getId(), requestDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(requestDto.getId().intValue())))
-                .andExpect(jsonPath("$.status", is("CANCELLED")));
+                .andExpect(jsonPath("$.status", is("CANCELED")));
     }
 
 }

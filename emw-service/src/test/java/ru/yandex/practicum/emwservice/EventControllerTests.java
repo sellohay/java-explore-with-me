@@ -116,7 +116,7 @@ public class EventControllerTests {
         mockMvc.perform(post("/users/{userId}/events", initiator.getId())
                         .content(objectMapper.writeValueAsString(validEventRequest))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -192,7 +192,7 @@ public class EventControllerTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(pendingEvent.getId().intValue())))
-                .andExpect(jsonPath("$.state", is("CANCELLED")));
+                .andExpect(jsonPath("$.state", is("CANCELED")));
     }
 
     @Test
@@ -224,6 +224,6 @@ public class EventControllerTests {
     @Test
     void getEventById_WhenNotPublished() throws Exception {
         mockMvc.perform(get("/events/{id}", pendingEvent.getId()))
-                .andExpect(status().isConflict());
+                .andExpect(status().isNotFound());
     }
 }

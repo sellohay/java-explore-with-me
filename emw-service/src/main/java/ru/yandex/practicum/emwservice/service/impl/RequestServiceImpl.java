@@ -95,7 +95,7 @@ public class RequestServiceImpl implements RequestService {
             throw new NotFoundException("Request with id=" + requestId + " does not exist");
         }
         Request request = reqOpt.get();
-        request.setStatus(RequestState.CANCELLED);
+        request.setStatus(RequestState.CANCELED);
         requestRepository.save(request);
         return RequestMapper.requestToDto(request);
     }
