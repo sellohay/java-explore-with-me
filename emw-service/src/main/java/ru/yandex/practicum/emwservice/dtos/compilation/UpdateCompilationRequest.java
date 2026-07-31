@@ -19,7 +19,6 @@ public class UpdateCompilationRequest {
     @JsonProperty("events")
     private List<Long> eventIds;
     private Boolean pinned;
-    @NotBlank(message = "Title can't be empty")
     @Size(min = 1, max = 50, message = "Title length must be from 1 to 50 symbols")
     private String title;
 }

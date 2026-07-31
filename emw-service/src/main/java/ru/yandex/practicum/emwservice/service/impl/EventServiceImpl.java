@@ -98,12 +98,18 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEvents(String text, List<Integer> categories, Boolean paid,
                                          LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                          EventSortOption sortOption, int from, int size) {
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new ValidationException("Start date must be before end date");
+        }
+        Boolean hasCategories = (categories != null && !categories.isEmpty());
+        List<Integer> validCategories = hasCategories ? categories : null;
+
         List<Event> events;
         if (sortOption == EventSortOption.EVENT_DATE) {
-            events = eventRepository.findPublishedWithFiltersSortEventDate(text, categories,
+            events = eventRepository.findPublishedWithFiltersSortEventDate(text, hasCategories, validCategories,
                     paid, rangeStart, rangeEnd, onlyAvailable, from, size);
         } else {
-            events = eventRepository.findPublishedWithFiltersSortViews(text, categories, paid,
+            events = eventRepository.findPublishedWithFiltersSortViews(text, hasCategories, validCategories, paid,
                     rangeStart, rangeEnd, onlyAvailable);
         }
 
@@ -153,6 +159,11 @@ public class EventServiceImpl implements EventService {
                     "0. Value: %s", request.getParticipantLimit());
             throw new ValidationException(errorMessage);
         }
+        if (request.getEventDate() != null && LocalDateTime.now().plusHours(2).isAfter(request.getEventDate())) {
+            String errorMessage = String.format("Field: eventDate. Error: must be at least " +
+                    "2 hours after now. Value: %s", request.getEventDate());
+            throw new ValidationException(errorMessage);
+        }
         event = EventMapper.updateEventFieldsUser(event, request);
         if (request.getCategoryId() != null) {
             Category category = categoryService.getCategoryEntity(request.getCategoryId());
@@ -166,7 +177,20 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> getAdminEvents(List<Long> users, List<String> states,
                                              List<Long> categories, LocalDateTime rangeStart,
                                              LocalDateTime rangeEnd, int from, int size) {
-        List<Event> events = eventRepository.findAdminEvents(users, states, categories, rangeStart, rangeEnd, from, size);
+        Boolean hasUsers = (users != null && !users.isEmpty());
+        Boolean hasStates = (states != null && !states.isEmpty());
+        Boolean hasCategories = (categories != null && !categories.isEmpty());
+
+        List<Long> validUsers = hasUsers ? users : null;
+        List<String> validStates = hasStates ? states : null;
+        List<Long> validCategories = hasCategories ? categories : null;
+
+        List<Event> events = eventRepository.findAdminEvents(
+                hasUsers, validUsers,
+                hasStates, validStates,
+                hasCategories, validCategories,
+                rangeStart, rangeEnd, from, size
+        );
         return mapToEventFullDtoList(events);
     }
 
@@ -180,11 +204,13 @@ public class EventServiceImpl implements EventService {
             throw new ValidationException(errorMessage);
         }
         StateActionAdmin action = request.getStateAction();
-        if (action.equals(StateActionAdmin.PUBLISH_EVENT) && !event.getState().equals(EventState.PENDING)) {
-            throw new UpdateEventException("Only pending event can be published");
-        }
-        if (action.equals(StateActionAdmin.REJECT_EVENT) && event.getState().equals(EventState.PUBLISHED)) {
-            throw new UpdateEventException("Only not published event can be published");
+        if (action != null) {
+            if (action.equals(StateActionAdmin.PUBLISH_EVENT) && !event.getState().equals(EventState.PENDING)) {
+                throw new UpdateEventException("Only pending event can be published");
+            }
+            if (action.equals(StateActionAdmin.REJECT_EVENT) && event.getState().equals(EventState.PUBLISHED)) {
+                throw new UpdateEventException("Only not published event can be published");
+            }
         }
         event = EventMapper.updateEventFieldsAdmin(event, request);
         event = eventRepository.save(event);
@@ -275,7 +301,8 @@ public class EventServiceImpl implements EventService {
 
             for (Map<String, Object> stat : statsList) {
                 String uri = (String) stat.get("uri");
-                Long hits = stat.get("hits") != null ? (Long) stat.get("hits") : 0L;
+                Number hitsNumber = (Number) stat.get("hits");
+                Long hits = hitsNumber != null ? hitsNumber.longValue() : 0L;
 
                 if (uri != null && uri.startsWith("/events/")) {
                     Long eventId = Long.parseLong(uri.replace("/events/", ""));

@@ -20,7 +20,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
           AND (:text IS NULL
                OR LOWER(e.annotation) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%'))
                OR LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%')))
-          AND (:categories IS NULL OR e.category_id IN (:categories))
+          AND (:hasCategories = FALSE OR e.category_id IN (:categories))
           AND (:paid IS NULL OR e.paid = :paid)
           AND (
                 (CAST(:rangeStart AS timestamp) IS NULL AND CAST(:rangeEnd AS timestamp) IS NULL AND e.event_date > CURRENT_TIMESTAMP)
@@ -39,9 +39,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         LIMIT :size
         OFFSET :from
         """, nativeQuery = true)
-    List<Event> findPublishedWithFiltersSortEventDate(String text, List<Integer> categories, Boolean paid,
-                                         LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                         Boolean onlyAvailable, int from, int size);
+    List<Event> findPublishedWithFiltersSortEventDate(String text, Boolean hasCategories, List<Integer> categories, Boolean paid,
+                                                      LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                      Boolean onlyAvailable, int from, int size);
 
     @Query(value = """
         SELECT e.* FROM events e
@@ -49,7 +49,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
           AND (:text IS NULL
                OR LOWER(e.annotation) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%'))
                OR LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%')))
-          AND (:categories IS NULL OR e.category_id IN (:categories))
+          AND (:hasCategories = FALSE OR e.category_id IN (:categories))
           AND (:paid IS NULL OR e.paid = :paid)
           AND (
                 (CAST(:rangeStart AS timestamp) IS NULL AND CAST(:rangeEnd AS timestamp) IS NULL AND e.event_date > CURRENT_TIMESTAMP)
@@ -65,7 +65,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                      AND r.status = 'CONFIRMED'
                ))
         """, nativeQuery = true)
-    List<Event> findPublishedWithFiltersSortViews(String text, List<Integer> categories, Boolean paid,
+    List<Event> findPublishedWithFiltersSortViews(String text, Boolean hasCategories, List<Integer> categories, Boolean paid,
                                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                   Boolean onlyAvailable);
 
@@ -74,16 +74,18 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = """
         SELECT * FROM events
-        WHERE (:users IS NULL OR initiator_id IN (:users))
-          AND (:states IS NULL OR state IN (:states))
-          AND (:categories IS NULL OR category_id IN (:categories))
+        WHERE (:hasUsers = FALSE OR initiator_id IN (:users))
+          AND (:hasStates = FALSE OR state IN (:states))
+          AND (:hasCategories = FALSE OR category_id IN (:categories))
           AND (CAST(:rangeStart AS timestamp) IS NULL OR event_date >= CAST(:rangeStart AS timestamp))
           AND (CAST(:rangeEnd AS timestamp) IS NULL OR event_date <= CAST(:rangeEnd AS timestamp))
         ORDER BY id ASC
         LIMIT :size
         OFFSET :from
     """, nativeQuery = true)
-    List<Event> findAdminEvents(List<Long> users, List<String> states, List<Long> categories,
+    List<Event> findAdminEvents(Boolean hasUsers, List<Long> users,
+                                Boolean hasStates, List<String> states,
+                                Boolean hasCategories, List<Long> categories,
                                 LocalDateTime rangeStart,LocalDateTime rangeEnd, int from, int size);
 
     List<Event> findAllByIdIn(List<Long> ids);
