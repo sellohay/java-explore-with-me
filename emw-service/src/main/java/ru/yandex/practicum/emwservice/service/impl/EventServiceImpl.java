@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -50,27 +51,14 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
-        if (!userService.isUserExist(userId)) {
-            throw new NotFoundException("User with id " + userId + " does not exist");
-        }
-        LocalDateTime now = LocalDateTime.now();
-        if (now.plusHours(2).isAfter(newEventDto.getEventDate())) {
-            String errorMessage = String.format("Field: eventDate. Error: must be at least " +
-                            "2 hours after now. Value: %s", newEventDto.getEventDate());
-            throw new ValidationException(errorMessage);
-        }
-        if (newEventDto.getParticipantLimit() < 0) {
-            String errorMessage = String.format("Field: participantLimit. Error: must be at least " +
-                    "0. Value: %s", newEventDto.getParticipantLimit());
-            throw new ValidationException(errorMessage);
-        }
+        validateNewEvent(userId, newEventDto);
 
         Event event = EventMapper.newToEvent(newEventDto);
         Category category = categoryService.getCategoryEntity(newEventDto.getCategoryId());
         User initiator = userService.getUserEntity(userId);
         event.setCategory(category);
         event.setInitiator(initiator);
-        event.setCreatedOn(now);
+        event.setCreatedOn(LocalDateTime.now());
 
         event = eventRepository.save(event);
         EventFullDto dto = EventMapper.eventToEventFullDto(event);
@@ -145,26 +133,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserRequest request) {
-        userService.isUserExist(userId);
-        Event event = getEventEntity(eventId);
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new NotFoundException("User with id " + userId + " does not have an event with id " + eventId);
+        userService.getUserEntity(userId);
+        Event event = validateUpdateEventUser(userId, eventId, request);
+        event = EventMapper.updateEventFields(event, request);
+        if (request.getStateAction() != null) {
+            if (request.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
+                event.setState(EventState.CANCELED);
+            } else {
+                event.setState(EventState.PENDING);
+            }
         }
-        if (event.getState().equals(EventState.PUBLISHED)) {
-            throw new UpdateRequestException("Only pending or canceled events can be changed");
-        }
-        if (request.getParticipantLimit() != null && request.getParticipantLimit() < 0) {
-            String errorMessage = String.format("Field: participantLimit. Error: must be at least " +
-                    "0. Value: %s", request.getParticipantLimit());
-            throw new ValidationException(errorMessage);
-        }
-        if (request.getEventDate() != null && LocalDateTime.now().plusHours(2).isAfter(request.getEventDate())) {
-            String errorMessage = String.format("Field: eventDate. Error: must be at least " +
-                    "2 hours after now. Value: %s", request.getEventDate());
-            throw new ValidationException(errorMessage);
-        }
-        event = EventMapper.updateEventFieldsUser(event, request);
         if (request.getCategoryId() != null) {
             Category category = categoryService.getCategoryEntity(request.getCategoryId());
             event.setCategory(category);
@@ -195,7 +175,27 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest request) {
+        Event event = validateUpdateEventAdmin(eventId, request);
+        event = EventMapper.updateEventFields(event, request);
+        if (request.getStateAction() != null) {
+            if (request.getStateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
+                event.setState(EventState.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            } else {
+                event.setState(EventState.CANCELED);
+            }
+        }
+        if (request.getCategoryId() != null) {
+            Category category = categoryService.getCategoryEntity(request.getCategoryId());
+            event.setCategory(category);
+        }
+        event = eventRepository.save(event);
+        return mapToEventFullDto(event);
+    }
+
+    private Event validateUpdateEventAdmin(Long eventId, UpdateEventAdminRequest request) {
         Event event = getEventEntity(eventId);
         LocalDateTime now = LocalDateTime.now();
         if (request.getEventDate() != null && now.plusHours(1).isAfter(request.getEventDate())) {
@@ -212,13 +212,12 @@ public class EventServiceImpl implements EventService {
                 throw new UpdateEventException("Only not published event can be published");
             }
         }
-        event = EventMapper.updateEventFieldsAdmin(event, request);
-        event = eventRepository.save(event);
-        return mapToEventFullDto(event);
+        return event;
     }
 
     @Override
     public List<EventShortDto> mapToEventShortDtoList(List<Event> events) {
+        events = addCategoryAndInitiator(events);
         Map<Long, Long> viewsMap = getViewsMap(events);
         Map<Long, Integer> confirmedRequestsMap = getConfReqMap(events);
 
@@ -263,6 +262,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<EventFullDto> mapToEventFullDtoList(List<Event> events) {
+        events = addCategoryAndInitiator(events);
         Map<Long, Long> viewsMap = getViewsMap(events);
         Map<Long, Integer> confirmedRequestsMap = getConfReqMap(events);
 
@@ -330,4 +330,57 @@ public class EventServiceImpl implements EventService {
                         ConfirmedRequestsCount::getCount
                 ));
     }
+
+    private void validateNewEvent(Long userId, NewEventDto newEventDto) {
+        if (!userService.isUserExist(userId)) {
+            throw new NotFoundException("User with id " + userId + " does not exist");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if (now.plusHours(2).isAfter(newEventDto.getEventDate())) {
+            String errorMessage = String.format("Field: eventDate. Error: must be at least " +
+                    "2 hours after now. Value: %s", newEventDto.getEventDate());
+            throw new ValidationException(errorMessage);
+        }
+        if (newEventDto.getParticipantLimit() < 0) {
+            String errorMessage = String.format("Field: participantLimit. Error: must be at least " +
+                    "0. Value: %s", newEventDto.getParticipantLimit());
+            throw new ValidationException(errorMessage);
+        }
+    }
+
+    private Event validateUpdateEventUser(Long userId, Long eventId, UpdateEventUserRequest request) {
+        Event event = getEventEntity(eventId);
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw new NotFoundException("User with id " + userId + " does not have an event with id " + eventId);
+        }
+        if (event.getState().equals(EventState.PUBLISHED)) {
+            throw new UpdateRequestException("Only pending or canceled events can be changed");
+        }
+        if (request.getParticipantLimit() != null && request.getParticipantLimit() < 0) {
+            String errorMessage = String.format("Field: participantLimit. Error: must be at least " +
+                    "0. Value: %s", request.getParticipantLimit());
+            throw new ValidationException(errorMessage);
+        }
+        if (request.getEventDate() != null && LocalDateTime.now().plusHours(2).isAfter(request.getEventDate())) {
+            String errorMessage = String.format("Field: eventDate. Error: must be at least " +
+                    "2 hours after now. Value: %s", request.getEventDate());
+            throw new ValidationException(errorMessage);
+        }
+        return event;
+    }
+
+    private List<Event> addCategoryAndInitiator(List<Event> events) {
+        if (events.isEmpty()) {
+            return events;
+        }
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
+                .toList();
+        Map<Long, Event> eventsMap = eventRepository.findAllByIdIn(eventIds).stream()
+                .collect(Collectors.toMap(Event::getId, event -> event));
+        return events.stream()
+                .map(event -> eventsMap.get(event.getId()))
+                .toList();
+    }
+
 }

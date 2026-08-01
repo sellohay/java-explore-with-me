@@ -1,6 +1,7 @@
 package ru.yandex.practicum.emwservice.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.emwservice.dtos.category.CategoryDto;
 import ru.yandex.practicum.emwservice.dtos.category.NewCategoryDto;
 import ru.yandex.practicum.emwservice.dtos.mappers.CategoryMapper;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -26,6 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
         Category category = CategoryMapper.newToCategory(newCategoryDto);
         category = categoryRepository.save(category);
@@ -33,6 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long catId) {
         checkCategoryExists(catId);
         if (eventRepository.existsByCategoryId(catId)) {
@@ -42,6 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDto updateCategory(Long catId, NewCategoryDto categoryDto) {
         checkCategoryExists(catId);
         Category category = CategoryMapper.newToCategory(categoryDto);

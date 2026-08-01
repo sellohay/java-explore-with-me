@@ -1,5 +1,7 @@
 package ru.yandex.practicum.emwservice.dtos.event;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,7 +14,9 @@ import java.util.List;
 @ToString
 public class EventRequestStatusUpdateRequest {
 
+    @NotEmpty(message = "Request list can't be empty")
     List<Long> requestIds;
 
+    @NotNull(message = "Status can't be empty")
     RequestUpdateStatus status;
 }

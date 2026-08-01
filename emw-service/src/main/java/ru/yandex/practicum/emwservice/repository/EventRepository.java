@@ -1,5 +1,6 @@
 package ru.yandex.practicum.emwservice.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.yandex.practicum.emwservice.model.Event;
@@ -88,5 +89,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                 Boolean hasCategories, List<Long> categories,
                                 LocalDateTime rangeStart,LocalDateTime rangeEnd, int from, int size);
 
+    @EntityGraph(attributePaths = {"category", "initiator"})
     List<Event> findAllByIdIn(List<Long> ids);
 }

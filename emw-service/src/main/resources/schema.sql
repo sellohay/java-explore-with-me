@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS requests (
     created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     status VARCHAR(10) NOT NULL,
 
+    CONSTRAINT uq_requester_event UNIQUE (requester_id, event_id),
     CONSTRAINT fk_requests_users FOREIGN KEY(requester_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_requests_events FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
 );

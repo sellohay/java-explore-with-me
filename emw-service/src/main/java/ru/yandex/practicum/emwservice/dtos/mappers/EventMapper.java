@@ -3,10 +3,7 @@ package ru.yandex.practicum.emwservice.dtos.mappers;
 import ru.yandex.practicum.emwservice.dtos.event.*;
 import ru.yandex.practicum.emwservice.model.Event;
 import ru.yandex.practicum.emwservice.model.util.EventState;
-import ru.yandex.practicum.emwservice.model.util.StateAction;
-import ru.yandex.practicum.emwservice.model.util.StateActionAdmin;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class EventMapper {
@@ -63,32 +60,7 @@ public class EventMapper {
         return eventShortDto;
     }
 
-    public static Event updateEventFieldsAdmin(Event event, UpdateEventAdminRequest request) {
-        event = updateEventFields(event, request);
-        if (request.getStateAction() != null) {
-            if (request.getStateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
-                event.setState(EventState.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
-            } else {
-                event.setState(EventState.CANCELED);
-            }
-        }
-        return event;
-    }
-
-    public static Event updateEventFieldsUser(Event event, UpdateEventUserRequest request) {
-        event = updateEventFields(event, request);
-        if (request.getStateAction() != null) {
-            if (request.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
-                event.setState(EventState.CANCELED);
-            } else {
-                event.setState(EventState.PENDING);
-            }
-        }
-        return event;
-    }
-
-    private static Event updateEventFields(Event event, UpdateEventBaseRequest request) {
+    public static Event updateEventFields(Event event, UpdateEventBaseRequest request) {
         if (request.getAnnotation() != null) {
             event.setAnnotation(request.getAnnotation());
         }

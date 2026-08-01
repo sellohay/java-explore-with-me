@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
@@ -37,28 +38,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         User user = userService.getUserEntity(userId);
-        Event event = eventService.getEventEntity(eventId);
-
-        //check if there's already request
-        //check if the same user
-        //check if published
-        //check if over the limit
-        if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
-            throw new RequestCreationException("Request already exists");
-        }
-        if (event.getInitiator().getId().equals(userId)) {
-            throw new RequestCreationException("User can't create request to their own event");
-        }
-        if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new RequestCreationException("Event hasn't been published yet");
-        }
-        int limit = event.getParticipantLimit();
-        if (limit != 0) {
-            //check how many participants
-            if (requestRepository.countByEventIdAndStatus(eventId, RequestState.CONFIRMED) == limit) {
-                throw new RequestCreationException("Participant limit exceeded");
-            }
-        }
+        Event event = validateNewRequest(userId, eventId);
 
         Request request = new Request();
         request.setRequester(user);
@@ -90,13 +70,38 @@ public class RequestServiceImpl implements RequestService {
         if (!userService.isUserExist(userId)) {
             throw new NotFoundException("User with id=" + userId + " does not exist");
         }
-        Optional<Request> reqOpt = requestRepository.findById(requestId);
+        Optional<Request> reqOpt = requestRepository.findByIdAndRequesterId(requestId, userId);
         if (reqOpt.isEmpty()) {
-            throw new NotFoundException("Request with id=" + requestId + " does not exist");
+            throw new NotFoundException("User with id=" + userId + "has no request on event with id=" + requestId);
         }
         Request request = reqOpt.get();
         request.setStatus(RequestState.CANCELED);
         requestRepository.save(request);
         return RequestMapper.requestToDto(request);
+    }
+
+    private Event validateNewRequest(Long userId, Long eventId) {
+        Event event = eventService.getEventEntity(eventId);
+        //check if there's already request
+        //check if the same user
+        //check if published
+        //check if over the limit
+        if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
+            throw new RequestCreationException("Request already exists");
+        }
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new RequestCreationException("User can't create request to their own event");
+        }
+        if (!event.getState().equals(EventState.PUBLISHED)) {
+            throw new RequestCreationException("Event hasn't been published yet");
+        }
+        int limit = event.getParticipantLimit();
+        if (limit != 0) {
+            //check how many participants
+            if (requestRepository.countByEventIdAndStatus(eventId, RequestState.CONFIRMED) == limit) {
+                throw new RequestCreationException("Participant limit exceeded");
+            }
+        }
+        return event;
     }
 }

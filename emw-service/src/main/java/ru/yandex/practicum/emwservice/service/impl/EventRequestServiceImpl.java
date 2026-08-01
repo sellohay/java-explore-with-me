@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class EventRequestServiceImpl implements EventRequestService {
 
     private final UserService userService;
@@ -49,14 +50,8 @@ public class EventRequestServiceImpl implements EventRequestService {
     public EventRequestStatusUpdateResult updateEventRequests(Long userId, Long eventId,
                                                               EventRequestStatusUpdateRequest request) {
         Event event = checkUserAndEvent(userId, eventId);
-        List<Request> requests = requestRepository.findAllById(request.getRequestIds());
-
-        //only pending
-        boolean hasNonPending = requests.stream()
-                .anyMatch(req -> !req.getStatus().equals(RequestState.PENDING));
-        if (hasNonPending) {
-            throw new UpdateRequestException("Only pending requests can be changed");
-        }
+        List<Request> requests = requestRepository.findAllByEventIdAndIdIn(eventId, request.getRequestIds());
+        validateRequests(request, requests);
 
         List<Request> confirmed = new ArrayList<>();
         List<Request> rejected = new ArrayList<>();
@@ -115,5 +110,18 @@ public class EventRequestServiceImpl implements EventRequestService {
         }
         return event;
     }
+
+    private void validateRequests(EventRequestStatusUpdateRequest request, List<Request> requests) {
+        if (requests.size() != request.getRequestIds().size()) {
+            throw new UpdateRequestException("Requests of the given event only must be provided");
+        }
+        //only pending
+        boolean hasNonPending = requests.stream()
+                .anyMatch(req -> !req.getStatus().equals(RequestState.PENDING));
+        if (hasNonPending) {
+            throw new UpdateRequestException("Only pending requests can be changed");
+        }
+    }
+
 
 }

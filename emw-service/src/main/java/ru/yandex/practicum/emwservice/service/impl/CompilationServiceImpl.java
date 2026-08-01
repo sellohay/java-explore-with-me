@@ -14,12 +14,10 @@ import ru.yandex.practicum.emwservice.repository.CompilationRepository;
 import ru.yandex.practicum.emwservice.service.interfaces.CompilationService;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
+@Transactional(readOnly = true)
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
@@ -50,12 +48,14 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional
     public void deleteCompilation(Long id) {
         findCompById(id);
         compilationRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public CompilationDto updateCompilation(Long id, UpdateCompilationRequest request) {
         Compilation compilation = findCompById(id);
         compilation = CompilationMapper.updateFields(compilation, request);
@@ -85,9 +85,29 @@ public class CompilationServiceImpl implements CompilationService {
         } else {
             compilations = compilationRepository.findCompilationWithFilters(from, size);
         }
+
+        Set<Event> events = new HashSet<>();
+        for (Compilation comp : compilations) {
+            events.addAll(comp.getEvents());
+        }
+
+        Map<Long, EventShortDto> eventShortDtoMap = new HashMap<>();
+        if (!events.isEmpty()) {
+            List<EventShortDto> shortDtos = eventService.mapToEventShortDtoList(new ArrayList<>(events));
+            for (EventShortDto dto : shortDtos) {
+                eventShortDtoMap.put(dto.getId(), dto);
+            }
+        }
+
         return compilations
                 .stream()
-                .map(this::convertToDto)
+                .map(compilation -> {
+                    List<EventShortDto> compEventDtos = compilation.getEvents()
+                            .stream()
+                            .map(event -> eventShortDtoMap.get(event.getId()))
+                            .toList();
+                    return CompilationMapper.compilationToDto(compilation, compEventDtos);
+                })
                 .toList();
     }
 
