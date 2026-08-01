@@ -1,5 +1,6 @@
 package ru.yandex.practicum.emwservice.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.yandex.practicum.emwservice.model.Compilation;
@@ -23,4 +24,7 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         OFFSET :from
     """, nativeQuery = true)
     List<Compilation> findCompilationsWithPinnedFilter(Boolean pinned, int from, int size);
+
+    @EntityGraph(attributePaths = {"events"})
+    List<Compilation> findAllByIdIn(List<Long> ids);
 }

@@ -15,6 +15,7 @@ import ru.yandex.practicum.emwservice.service.interfaces.CompilationService;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -79,13 +80,53 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
-        List<Compilation> compilations;
+        List<Compilation> rawCompilations;
         if (pinned != null) {
-            compilations = compilationRepository.findCompilationsWithPinnedFilter(pinned, from, size);
+            rawCompilations = compilationRepository.findCompilationsWithPinnedFilter(pinned, from, size);
         } else {
-            compilations = compilationRepository.findCompilationWithFilters(from, size);
+            rawCompilations = compilationRepository.findCompilationWithFilters(from, size);
         }
 
+        if (rawCompilations.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Compilation> compilations = getFullCompilations(rawCompilations);
+        return mapToDtoCompilations(compilations);
+
+    }
+
+    private Compilation findCompById(Long id) {
+        return compilationRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Compilation with id=" + id + " was not found"));
+    }
+
+    private CompilationDto convertToDto(Compilation compilation) {
+        List<EventShortDto> eventShortDtos = new ArrayList<>();
+        if (!compilation.getEvents().isEmpty()) {
+            eventShortDtos = eventService.mapToEventShortDtoList(new ArrayList<>(compilation.getEvents()));
+        }
+        return CompilationMapper.compilationToDto(compilation, eventShortDtos);
+
+    }
+
+    private List<Compilation> getFullCompilations(List<Compilation> rawCompilations) {
+        List<Long> compIds = rawCompilations
+                .stream()
+                .map(Compilation::getId)
+                .toList();
+
+        Map<Long, Compilation> compilationsWithEvents = compilationRepository.findAllByIdIn(compIds)
+                .stream()
+                .collect(Collectors.toMap(Compilation::getId, c -> c));
+
+        return rawCompilations
+                .stream()
+                .map(comp -> compilationsWithEvents.get(comp.getId()))
+                .toList();
+    }
+
+    private List<CompilationDto> mapToDtoCompilations(List<Compilation> compilations) {
         Set<Event> events = new HashSet<>();
         for (Compilation comp : compilations) {
             events.addAll(comp.getEvents());
@@ -109,19 +150,5 @@ public class CompilationServiceImpl implements CompilationService {
                     return CompilationMapper.compilationToDto(compilation, compEventDtos);
                 })
                 .toList();
-    }
-
-    private Compilation findCompById(Long id) {
-        return compilationRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Compilation with id=" + id + " was not found"));
-    }
-
-    private CompilationDto convertToDto(Compilation compilation) {
-        List<EventShortDto> eventShortDtos = new ArrayList<>();
-        if (!compilation.getEvents().isEmpty()) {
-            eventShortDtos = eventService.mapToEventShortDtoList(new ArrayList<>(compilation.getEvents()));
-        }
-        return CompilationMapper.compilationToDto(compilation, eventShortDtos);
-
     }
 }
