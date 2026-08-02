@@ -45,7 +45,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                                       Boolean onlyAvailable, int from, int size);
 
     @Query(value = """
-        SELECT e.* FROM events e
+        SELECT e.id FROM events e
         WHERE e.state = 'PUBLISHED'
           AND (:text IS NULL
                OR LOWER(e.annotation) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%'))
@@ -66,7 +66,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                      AND r.status = 'CONFIRMED'
                ))
         """, nativeQuery = true)
-    List<Event> findPublishedWithFiltersSortViews(String text, Boolean hasCategories, List<Integer> categories, Boolean paid,
+    List<Long> findPublishedIdsWithFiltersSortViews(String text, Boolean hasCategories, List<Integer> categories, Boolean paid,
                                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                   Boolean onlyAvailable);
 

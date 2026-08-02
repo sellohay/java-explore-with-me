@@ -22,9 +22,7 @@ import ru.yandex.practicum.statsclient.StatsClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,27 +90,39 @@ public class EventServiceImpl implements EventService {
         Boolean hasCategories = (categories != null && !categories.isEmpty());
         List<Integer> validCategories = hasCategories ? categories : null;
 
-        List<Event> events;
         if (sortOption == EventSortOption.EVENT_DATE) {
-            events = eventRepository.findPublishedWithFiltersSortEventDate(text, hasCategories, validCategories,
+            List<Event> events = eventRepository.findPublishedWithFiltersSortEventDate(text, hasCategories, validCategories,
                     paid, rangeStart, rangeEnd, onlyAvailable, from, size);
-        } else {
-            events = eventRepository.findPublishedWithFiltersSortViews(text, hasCategories, validCategories, paid,
+            return mapToEventShortDtoList(events);
+        }
+        List<Long> ids = eventRepository.findPublishedIdsWithFiltersSortViews(text, hasCategories, validCategories, paid,
                     rangeStart, rangeEnd, onlyAvailable);
+        if (ids.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        List<EventShortDto> dtos = mapToEventShortDtoList(events);
+        List<String> uris = ids.stream()
+                .map(id -> "/events/" + id)
+                .toList();
 
-        if (sortOption == EventSortOption.VIEWS) {
-            return dtos.stream()
-                    .sorted((dto1, dto2) -> Long.compare(dto2.getViews(), dto1.getViews()))
-                    .skip(from)
-                    .limit(size)
-                    .toList();
-        }
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = end.minusYears(10);
+        Map<Long, Long> eventsMap = getStatsMap(start, end, uris);
 
-        return dtos;
+        List<Long> eventsIds = ids.stream()
+                .sorted(Comparator.comparingLong(id -> eventsMap.getOrDefault(id, 0L)))
+                .skip(from)
+                .limit(size)
+                .toList();
 
+        List<Event> limitedEvents = eventRepository.findAllByIdIn(eventsIds);
+        List<EventShortDto> dtos = mapToEventShortDtoList(limitedEvents);
+
+        return dtos.stream()
+                .sorted((dto1, dto2) -> Long.compare(dto2.getViews(), dto1.getViews()))
+                .skip(from)
+                .limit(size)
+                .toList();
     }
 
     @Override
@@ -290,6 +300,10 @@ public class EventServiceImpl implements EventService {
                 .orElse(LocalDateTime.now().minusYears(10));
         LocalDateTime end = LocalDateTime.now();
 
+        return getStatsMap(start, end, uris);
+    }
+
+    private Map<Long, Long> getStatsMap(LocalDateTime start, LocalDateTime end, List<String> uris) {
         String startStr = start.format(formatter);
         String endStr = end.format(formatter);
         ResponseEntity<Object> response = statsClient.getStats(startStr, endStr, uris, true);
@@ -310,7 +324,6 @@ public class EventServiceImpl implements EventService {
                 }
             }
         }
-
         return viewsMap;
     }
 
