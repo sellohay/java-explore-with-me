@@ -17,12 +17,16 @@ import ru.yandex.practicum.emwservice.dtos.event.EventFullDto;
 import ru.yandex.practicum.emwservice.dtos.event.NewEventDto;
 import ru.yandex.practicum.emwservice.dtos.event.UpdateEventAdminRequest;
 import ru.yandex.practicum.emwservice.dtos.event.UpdateEventUserRequest;
+import ru.yandex.practicum.emwservice.dtos.rating.RatingDto;
+import ru.yandex.practicum.emwservice.model.util.projections.EventRatingCount;
 import ru.yandex.practicum.emwservice.model.util.Location;
 import ru.yandex.practicum.emwservice.dtos.user.NewUserRequest;
 import ru.yandex.practicum.emwservice.dtos.user.UserDto;
-import ru.yandex.practicum.emwservice.model.util.StateActionAdmin;
+import ru.yandex.practicum.emwservice.model.util.enums.StateActionAdmin;
+import ru.yandex.practicum.emwservice.repository.RatingRepository;
 import ru.yandex.practicum.emwservice.service.interfaces.CategoryService;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
+import ru.yandex.practicum.emwservice.service.interfaces.RatingService;
 import ru.yandex.practicum.emwservice.service.interfaces.UserService;
 import ru.yandex.practicum.statsclient.StatsClient;
 import tools.jackson.databind.ObjectMapper;
@@ -33,8 +37,8 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -62,6 +66,12 @@ public class EventControllerTests {
 
     @MockitoBean
     private StatsClient statsClient;
+
+    @MockitoBean
+    private RatingService ratingService;
+
+    @MockitoBean
+    private RatingRepository ratingRepository;
 
     private UserDto initiator;
     private CategoryDto category;
@@ -225,5 +235,67 @@ public class EventControllerTests {
     void getEventById_WhenNotPublished() throws Exception {
         mockMvc.perform(get("/events/{id}", pendingEvent.getId()))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void setRating_returnRatingDto() throws Exception {
+        RatingDto mockRating = new RatingDto();
+        mockRating.setId(1L);
+        mockRating.setUserId(initiator.getId());
+        mockRating.setEventId(pendingEvent.getId());
+        mockRating.setLiked(true);
+
+        when(ratingService.setRating(anyLong(), anyLong(), anyBoolean()))
+                .thenReturn(mockRating);
+
+        mockMvc.perform(post("/users/{userId}/events/{eventId}/rate", initiator.getId(), pendingEvent.getId())
+                        .param("liked", "true"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.liked", is(true)));
+    }
+
+    @Test
+    void deleteRating_ShouldReturnNoContent() throws Exception {
+        mockMvc.perform(delete("/users/{userId}/events/{eventId}/rate", initiator.getId(), pendingEvent.getId()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getEventById_returnFullDtoWithRating() throws Exception {
+        UpdateEventAdminRequest publishRequest = new UpdateEventAdminRequest();
+        publishRequest.setStateAction(StateActionAdmin.PUBLISH_EVENT);
+        eventService.updateEventAdmin(pendingEvent.getId(), publishRequest);
+
+        EventRatingCount mockRatingCount = mock(EventRatingCount.class);
+        when(mockRatingCount.getEventId()).thenReturn(pendingEvent.getId());
+        when(mockRatingCount.getLikes()).thenReturn(15);
+        when(mockRatingCount.getDislikes()).thenReturn(2);
+
+        when(ratingRepository.getEventRatingCountById(pendingEvent.getId()))
+                .thenReturn(mockRatingCount);
+
+        mockMvc.perform(get("/events/{id}", pendingEvent.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.likes", is(15)))
+                .andExpect(jsonPath("$.dislikes", is(2)))
+                .andExpect(jsonPath("$.rating", is(13)));
+    }
+
+    @Test
+    void getEvents_returnShortDtoWithRating() throws Exception {
+        EventRatingCount mockRatingCount = mock(EventRatingCount.class);
+        when(mockRatingCount.getEventId()).thenReturn(pendingEvent.getId());
+        when(mockRatingCount.getLikes()).thenReturn(10);
+        when(mockRatingCount.getDislikes()).thenReturn(4);
+
+        when(ratingRepository.getEventRatingsByIds(any()))
+                .thenReturn(List.of(mockRatingCount));
+
+        mockMvc.perform(get("/users/{userId}/events", initiator.getId())
+                        .param("from", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].rating", is(6)));
     }
 }

@@ -45,4 +45,8 @@ public class EventFullDto {
     private String title;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long views;
+
+    private int likes;
+    private int dislikes;
+    private int rating;
 }

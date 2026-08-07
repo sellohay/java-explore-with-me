@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.emwservice.model.util.RequestUpdateStatus;
+import ru.yandex.practicum.emwservice.model.util.enums.RequestUpdateStatus;
 
 import java.util.List;
 
