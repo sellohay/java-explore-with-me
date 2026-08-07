@@ -4,32 +4,25 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.emwservice.model.util.enums.RequestState;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "requests")
+@Table(name = "ratings")
 @Getter
 @Setter
 @ToString
-public class Request {
+public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "requester_id")
-    private User requester;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
 
-    private LocalDateTime created;
-
-    @Enumerated(EnumType.STRING)
-    private RequestState status;
+    private boolean liked;
 }
-

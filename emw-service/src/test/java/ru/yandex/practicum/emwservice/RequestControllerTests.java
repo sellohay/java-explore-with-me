@@ -19,7 +19,7 @@ import ru.yandex.practicum.emwservice.dtos.request.ParticipationRequestDto;
 import ru.yandex.practicum.emwservice.dtos.user.NewUserRequest;
 import ru.yandex.practicum.emwservice.dtos.user.UserDto;
 import ru.yandex.practicum.emwservice.model.util.Location;
-import ru.yandex.practicum.emwservice.model.util.StateActionAdmin;
+import ru.yandex.practicum.emwservice.model.util.enums.StateActionAdmin;
 import ru.yandex.practicum.emwservice.service.interfaces.CategoryService;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
 import ru.yandex.practicum.emwservice.service.interfaces.RequestService;

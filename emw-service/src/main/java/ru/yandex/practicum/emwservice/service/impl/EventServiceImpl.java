@@ -1,7 +1,6 @@
 package ru.yandex.practicum.emwservice.service.impl;
 
 import jakarta.validation.ValidationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.emwservice.dtos.event.*;
@@ -12,38 +11,34 @@ import ru.yandex.practicum.emwservice.exception.UpdateRequestException;
 import ru.yandex.practicum.emwservice.model.Category;
 import ru.yandex.practicum.emwservice.model.Event;
 import ru.yandex.practicum.emwservice.model.User;
-import ru.yandex.practicum.emwservice.model.util.*;
+import ru.yandex.practicum.emwservice.model.util.enums.EventSortOption;
+import ru.yandex.practicum.emwservice.model.util.enums.EventState;
+import ru.yandex.practicum.emwservice.model.util.enums.StateAction;
+import ru.yandex.practicum.emwservice.model.util.enums.StateActionAdmin;
 import ru.yandex.practicum.emwservice.repository.EventRepository;
-import ru.yandex.practicum.emwservice.repository.RequestRepository;
 import ru.yandex.practicum.emwservice.service.interfaces.CategoryService;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
 import ru.yandex.practicum.emwservice.service.interfaces.UserService;
-import ru.yandex.practicum.statsclient.StatsClient;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     private final EventRepository eventRepository;
     private final UserService userService;
     private final CategoryService categoryService;
-    private final RequestRepository requestRepository;
-    private final StatsClient statsClient;
+    private final EventUtilService eventUtilService;
+
 
     public EventServiceImpl(EventRepository eventRepository, UserService userService,
-                            CategoryService categoryService, RequestRepository requestRepository, StatsClient statsClient) {
+                            CategoryService categoryService, EventUtilService eventUtilService) {
         this.eventRepository = eventRepository;
         this.userService = userService;
         this.categoryService = categoryService;
-        this.requestRepository = requestRepository;
-        this.statsClient = statsClient;
+        this.eventUtilService = eventUtilService;
     }
 
     @Override
@@ -62,6 +57,9 @@ public class EventServiceImpl implements EventService {
         EventFullDto dto = EventMapper.eventToEventFullDto(event);
         dto.setConfirmedRequests(0);
         dto.setViews(0L);
+        dto.setLikes(0);
+        dto.setDislikes(0);
+        dto.setRating(0);
         return dto;
     }
 
@@ -77,7 +75,7 @@ public class EventServiceImpl implements EventService {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new NotFoundException("Event with id " + id + " has not been published");
         }
-        return mapToEventFullDto(event);
+        return eventUtilService.mapToEventFullDto(event);
     }
 
     @Override
@@ -90,11 +88,16 @@ public class EventServiceImpl implements EventService {
         Boolean hasCategories = (categories != null && !categories.isEmpty());
         List<Integer> validCategories = hasCategories ? categories : null;
 
-        if (sortOption == EventSortOption.EVENT_DATE) {
+        if (sortOption.equals(EventSortOption.EVENT_DATE)) {
             List<Event> events = eventRepository.findPublishedWithFiltersSortEventDate(text, hasCategories, validCategories,
                     paid, rangeStart, rangeEnd, onlyAvailable, from, size);
-            return mapToEventShortDtoList(events);
+            return eventUtilService.mapToEventShortDtoList(events);
+        } else if (sortOption.equals(EventSortOption.RATING)) {
+            List<Event> events = eventRepository.findPublishedWithFiltersSortRating(text, hasCategories, validCategories,
+                    paid, rangeStart, rangeEnd, onlyAvailable, from, size);
+            return eventUtilService.mapToEventShortDtoList(events);
         }
+
         List<Long> ids = eventRepository.findPublishedIdsWithFiltersSortViews(text, hasCategories, validCategories, paid,
                     rangeStart, rangeEnd, onlyAvailable);
         if (ids.isEmpty()) {
@@ -107,7 +110,7 @@ public class EventServiceImpl implements EventService {
 
         LocalDateTime end = LocalDateTime.now();
         LocalDateTime start = end.minusYears(10);
-        Map<Long, Long> eventsMap = getStatsMap(start, end, uris);
+        Map<Long, Long> eventsMap = eventUtilService.getStatsMap(start, end, uris);
 
         List<Long> eventsIds = ids.stream()
                 .sorted(Comparator.comparingLong(id -> eventsMap.getOrDefault(id, 0L)))
@@ -116,7 +119,7 @@ public class EventServiceImpl implements EventService {
                 .toList();
 
         List<Event> limitedEvents = eventRepository.findAllByIdIn(eventsIds);
-        List<EventShortDto> dtos = mapToEventShortDtoList(limitedEvents);
+        List<EventShortDto> dtos = eventUtilService.mapToEventShortDtoList(limitedEvents);
 
         return dtos.stream()
                 .sorted((dto1, dto2) -> Long.compare(dto2.getViews(), dto1.getViews()))
@@ -129,7 +132,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEventsByUser(Long userId, int from, int size) {
         userService.isUserExist(userId);
         List<Event> events = eventRepository.getEventsByUser(userId, from, size);
-        return mapToEventShortDtoList(events);
+        return eventUtilService.mapToEventShortDtoList(events);
     }
 
     @Override
@@ -139,7 +142,7 @@ public class EventServiceImpl implements EventService {
         if (!event.getInitiator().getId().equals(userId)) {
             throw new NotFoundException("User with id " + userId + " does not have an event with id=" + eventId);
         }
-        return mapToEventFullDto(event);
+        return eventUtilService.mapToEventFullDto(event);
     }
 
     @Override
@@ -160,7 +163,7 @@ public class EventServiceImpl implements EventService {
             event.setCategory(category);
         }
         event = eventRepository.save(event);
-        return mapToEventFullDto(event);
+        return eventUtilService.mapToEventFullDto(event);
     }
 
     @Override
@@ -181,7 +184,7 @@ public class EventServiceImpl implements EventService {
                 hasCategories, validCategories,
                 rangeStart, rangeEnd, from, size
         );
-        return mapToEventFullDtoList(events);
+        return eventUtilService.mapToEventFullDtoList(events);
     }
 
     @Override
@@ -202,7 +205,7 @@ public class EventServiceImpl implements EventService {
             event.setCategory(category);
         }
         event = eventRepository.save(event);
-        return mapToEventFullDto(event);
+        return eventUtilService.mapToEventFullDto(event);
     }
 
     private Event validateUpdateEventAdmin(Long eventId, UpdateEventAdminRequest request) {
@@ -226,122 +229,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> mapToEventShortDtoList(List<Event> events) {
-        events = addCategoryAndInitiator(events);
-        Map<Long, Long> viewsMap = getViewsMap(events);
-        Map<Long, Integer> confirmedRequestsMap = getConfReqMap(events);
-
-        return events.stream()
-                .map(event -> {
-                    int confReq = confirmedRequestsMap.getOrDefault(event.getId(), 0);
-                    long views = viewsMap.getOrDefault(event.getId(), 0L);
-                    return mapToEventShortDto(event, confReq, views);
-                })
-                .toList();
-
-    }
-
-    @Override
     public List<Event> getByIds(List<Long> ids) {
         return eventRepository.findAllByIdIn(ids);
-    }
-
-    private EventFullDto mapToEventFullDto(Event event) {
-        Map<Long, Long> viewsMap = getViewsMap(List.of(event));
-        Long views = viewsMap.getOrDefault(event.getId(), 0L);
-        int confReq = requestRepository.countByEventIdAndStatus(event.getId(), RequestState.CONFIRMED);
-
-        EventFullDto dto = EventMapper.eventToEventFullDto(event);
-        dto.setConfirmedRequests(confReq);
-        dto.setViews(views);
-        return dto;
-    }
-
-    private EventFullDto mapToEventFullDto(Event event, int confReq, Long views) {
-        EventFullDto dto = EventMapper.eventToEventFullDto(event);
-        dto.setConfirmedRequests(confReq);
-        dto.setViews(views);
-        return dto;
-    }
-
-    private EventShortDto mapToEventShortDto(Event event, int confReq, long views) {
-        EventShortDto dto = EventMapper.eventToEventShortDto(event);
-        dto.setConfirmedRequests(confReq);
-        dto.setViews(views);
-        return dto;
-    }
-
-    private List<EventFullDto> mapToEventFullDtoList(List<Event> events) {
-        events = addCategoryAndInitiator(events);
-        Map<Long, Long> viewsMap = getViewsMap(events);
-        Map<Long, Integer> confirmedRequestsMap = getConfReqMap(events);
-
-        return events.stream()
-                .map(event -> {
-                    int confReq = confirmedRequestsMap.getOrDefault(event.getId(), 0);
-                    long views = viewsMap.getOrDefault(event.getId(), 0L);
-                    return mapToEventFullDto(event, confReq, views);
-                })
-                .toList();
-    }
-
-    private Map<Long, Long> getViewsMap(List<Event> events) {
-        if (events.isEmpty()) {
-            return new HashMap<>();
-        }
-
-        List<String> uris = events.stream()
-                .map(event -> "/events/" + event.getId())
-                .toList();
-
-        LocalDateTime start = events.stream()
-                .map(Event::getCreatedOn)
-                .min(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.now().minusYears(10));
-        LocalDateTime end = LocalDateTime.now();
-
-        return getStatsMap(start, end, uris);
-    }
-
-    private Map<Long, Long> getStatsMap(LocalDateTime start, LocalDateTime end, List<String> uris) {
-        String startStr = start.format(formatter);
-        String endStr = end.format(formatter);
-        ResponseEntity<Object> response = statsClient.getStats(startStr, endStr, uris, true);
-        Object body = response.getBody();
-
-        Map<Long, Long> viewsMap = new HashMap<>();
-        if (body instanceof List) {
-            List<Map<String, Object>> statsList = (List<Map<String, Object>>) body;
-
-            for (Map<String, Object> stat : statsList) {
-                String uri = (String) stat.get("uri");
-                Number hitsNumber = (Number) stat.get("hits");
-                Long hits = hitsNumber != null ? hitsNumber.longValue() : 0L;
-
-                if (uri != null && uri.startsWith("/events/")) {
-                    Long eventId = Long.parseLong(uri.replace("/events/", ""));
-                    viewsMap.put(eventId, hits);
-                }
-            }
-        }
-        return viewsMap;
-    }
-
-    private Map<Long, Integer> getConfReqMap(List<Event> events) {
-        if (events.isEmpty()) {
-            return new HashMap<>();
-        }
-
-        List<Long> eventIds = events.stream()
-                .map(Event::getId)
-                .toList();
-
-        return requestRepository.getConfReqCounts(eventIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        ConfirmedRequestsCount::getEventId,
-                        ConfirmedRequestsCount::getCount
-                ));
     }
 
     private void validateNewEvent(Long userId, NewEventDto newEventDto) {
@@ -380,20 +269,6 @@ public class EventServiceImpl implements EventService {
             throw new ValidationException(errorMessage);
         }
         return event;
-    }
-
-    private List<Event> addCategoryAndInitiator(List<Event> events) {
-        if (events.isEmpty()) {
-            return events;
-        }
-        List<Long> eventIds = events.stream()
-                .map(Event::getId)
-                .toList();
-        Map<Long, Event> eventsMap = eventRepository.findAllByIdIn(eventIds).stream()
-                .collect(Collectors.toMap(Event::getId, event -> event));
-        return events.stream()
-                .map(event -> eventsMap.get(event.getId()))
-                .toList();
     }
 
 }

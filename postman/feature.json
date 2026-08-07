@@ -1,0 +1,1356 @@
+{
+  "info": {
+    "_postman_id": "ade8e7b2-2fa9-4d7c-8eb4-c2f8c161f25b",
+    "name": "add-rating-events",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "43842717",
+    "_collection_link": "https://go.postman.co/collection/43842717-ade8e7b2-2fa9-4d7c-8eb4-c2f8c161f25b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "add user 1",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"user1@yandex.ru\",\r\n  \"name\": \"Иван Иванов\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/users",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add user 2",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"user2@ayandex.ru\",\r\n  \"name\": \"Анна Смирнова\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/users",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add user 3",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"user3@ayandex.ru\",\r\n  \"name\": \"Петр Петров\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/users",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add user 4",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"user4@ayandex.ru\",\r\n  \"name\": \"Елена Веселова\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/users",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add category 1",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Концерты\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/categories",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add category 2",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Выставки\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/categories",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add category 3",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Митапы\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/categories",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add category 4",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Мастер-классы\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/categories",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add event 1",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"annotation\": \"Большой рок-концерт под открытым небом для всех желающих.\",\r\n  \"category\": 1,\r\n  \"description\": \"Приглашаем всех любителей рока на грандиозный концерт.\",\r\n  \"eventDate\": \"2027-05-15 19:00:00\",\r\n  \"location\": {\r\n    \"lat\": 55.751244,\r\n    \"lon\": 37.618423\r\n  },\r\n  \"paid\": true,\r\n  \"participantLimit\": 100,\r\n  \"requestModeration\": true,\r\n  \"title\": \"Рок-концерт 2027\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/users/1/events",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add event 2",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"annotation\": \"Уникальная выставка современного искусства в центре города.\",\r\n  \"category\": 2,\r\n  \"description\": \"Посетите нашу новую выставку современного искусства. Вас ждут картины, скульптуры и интерактивные инсталляции от ведущих авторов.\",\r\n  \"eventDate\": \"2027-06-20 10:00:00\",\r\n  \"location\": {\r\n    \"lat\": 55.760221,\r\n    \"lon\": 37.648391\r\n  },\r\n  \"paid\": false,\r\n  \"participantLimit\": 50,\r\n  \"requestModeration\": false,\r\n  \"title\": \"Современное искусство\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/users/1/events",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add event 3",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"annotation\": \"Технический митап для Java разработчиков и инженеров.\",\r\n  \"category\": 3,\r\n  \"description\": \"Обсуждаем последние тренды в разработке на Java, работу со Spring Boot и оптимизацию работы с данными.\",\r\n  \"eventDate\": \"2027-08-10 18:30:00\",\r\n  \"location\": {\r\n    \"lat\": 55.792134,\r\n    \"lon\": 37.581231\r\n  },\r\n  \"paid\": false,\r\n  \"participantLimit\": 30,\r\n  \"requestModeration\": true,\r\n  \"title\": \"Java Backend Meetup\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/users/2/events",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "2",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add event 4",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"annotation\": \"Мастер-класс по приготовлению настоящей итальянской пасты.\",\r\n  \"category\": 4,\r\n  \"description\": \"Научитесь готовить вкуснейшую пасту с нуля под руководством опытного шеф-повара из Италии. Все ингредиенты предоставляются.\",\r\n  \"eventDate\": \"2027-09-05 14:00:00\",\r\n  \"location\": {\r\n    \"lat\": 55.733333,\r\n    \"lon\": 37.588889\r\n  },\r\n  \"paid\": true,\r\n  \"participantLimit\": 10,\r\n  \"requestModeration\": true,\r\n  \"title\": \"Итальянская паста\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/users/2/events",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "2",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "publish event 1",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"stateAction\": \"PUBLISH_EVENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/events/1",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "events",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "publish event 2",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"stateAction\": \"PUBLISH_EVENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/events/2",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "events",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "publish event 3",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"stateAction\": \"PUBLISH_EVENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/events/3",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "events",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "publish event 4",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"stateAction\": \"PUBLISH_EVENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/admin/events/4",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "events",
+            "4"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add request 1",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/requests?eventId=1",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "eventId",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add request 2",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/requests?eventId=2",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "eventId",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add request 3",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/4/requests?eventId=3",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "4",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "eventId",
+              "value": "3"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add request 4",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/4/requests?eventId=4",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "4",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "eventId",
+              "value": "4"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "confirm request 1",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"requestIds\": \r\n    [\r\n        1\r\n    ],\r\n    \"status\": \"CONFIRMED\" \r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/users/1/events/1/requests",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events",
+            "1",
+            "requests"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "confirm request 3",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"requestIds\": \r\n    [\r\n        3\r\n    ],\r\n    \"status\": \"CONFIRMED\" \r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/users/2/events/3/requests",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "2",
+            "events",
+            "3",
+            "requests"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test add rate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 201 Created\", function () {\r",
+              "    pm.expect(pm.response.code).to.equal(201); \r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ должен содержать тело в формате JSON\", function () {\r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"В теле ответа должна быть RatingDto\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body).to.be.an('object');\r",
+              "    pm.expect(body).to.have.property('id');\r",
+              "    pm.expect(body).to.have.property('userId');\r",
+              "    pm.expect(body).to.have.property('eventId');\r",
+              "    pm.expect(body).to.have.property('liked');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/events/1/rate?liked=true",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "events",
+            "1",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test add rate for pending request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 409\", function () {\r",
+              "    pm.expect(pm.response.code).to.equal(409);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ должен содержать структуру ошибки\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body.status).to.equal(\"CONFLICT\");\r",
+              "    pm.expect(body).to.have.property('message');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/4/events/4/rate?liked=true",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "4",
+            "events",
+            "4",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test add rate for nonexistent user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 404\", function () {\r",
+              "    pm.response.to.be.notFound;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ должен содержать сообщение о том, что объект не найден\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body.status).to.equal(\"NOT_FOUND\");\r",
+              "    pm.expect(body.reason).to.equal(\"The required object was not found.\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/5/events/4/rate?liked=true",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "5",
+            "events",
+            "4",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test update rate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 200\", function () {\r",
+              "    pm.response.to.be.ok; \r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ должен содержать тело в формате JSON\", function () {\r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Поле liked в ответе должно быть обновлено\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body).to.be.an('object');\r",
+              "    pm.expect(body).to.have.property('liked');\r",
+              "    pm.expect(body.liked).to.be.false; \r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/events/1/rate?liked=false",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "events",
+            "1",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test delete rate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 204\", function () {\r",
+              "    pm.expect(pm.response.code).to.equal(204);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Тело ответа должно быть пустым\", function () {\r",
+              "    pm.expect(pm.response.text()).to.be.empty; \r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/events/1/rate",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "events",
+            "1",
+            "rate"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test delete rate nonexistent",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 404\", function () {\r",
+              "    pm.response.to.be.notFound;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ должен содержать структуру ошибки\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body.status).to.equal(\"NOT_FOUND\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/events/1/rate",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "events",
+            "1",
+            "rate"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add request 5",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/2/requests?eventId=2",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "2",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "eventId",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add rate 2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/events/1/rate?liked=false",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "events",
+            "1",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add rate 3",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/3/events/2/rate?liked=true",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "3",
+            "events",
+            "2",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add rate 4",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/2/events/2/rate?liked=true",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "2",
+            "events",
+            "2",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "confirm request 4",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"requestIds\": \r\n    [\r\n        4\r\n    ],\r\n    \"status\": \"CONFIRMED\" \r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/users/2/events/4/requests",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "2",
+            "events",
+            "4",
+            "requests"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add rate 5",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/4/events/4/rate?liked=true",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "4",
+            "events",
+            "4",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test rating sort",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 200 OK\", function () {\r",
+              "    pm.response.to.be.ok;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Тело ответа должно быть массивом\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body).to.be.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"События должны содержать поле rating и быть отсортированы по убыванию\", function () {\r",
+              "    const events = pm.response.json();\r",
+              "        pm.expect(events[0]).to.have.property('rating');\r",
+              "        pm.expect(events[0].rating).to.equal(2);\r",
+              "\r",
+              "        pm.expect(events[1]).to.have.property('rating');\r",
+              "        pm.expect(events[1].rating).to.equal(1);\r",
+              "\r",
+              "        pm.expect(events[2]).to.have.property('rating');\r",
+              "        pm.expect(events[2].rating).to.equal(0);\r",
+              "\r",
+              "        pm.expect(events[3]).to.have.property('rating');\r",
+              "        pm.expect(events[3].rating).to.equal(-1);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/events?sortOption=RATING&from=0&size=10",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events"
+          ],
+          "query": [
+            {
+              "key": "sortOption",
+              "value": "RATING"
+            },
+            {
+              "key": "from",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add request 6",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/4/requests?eventId=3",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "4",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "eventId",
+              "value": "3"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add rate 6",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/4/events/3/rate?liked=true",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "4",
+            "events",
+            "3",
+            "rate"
+          ],
+          "query": [
+            {
+              "key": "liked",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "test user rating",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 200 OK\", function () {\r",
+              "    pm.response.to.be.ok;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Тело ответа должно быть массивом\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body).to.be.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Пользователи должны содержать поле rating и быть отсортированы по убыванию\", function () {\r",
+              "    const users = pm.response.json();\r",
+              "    \r",
+              "        pm.expect(users[0]).to.have.property('rating');\r",
+              "        pm.expect(users[0].id).to.equal(2);\r",
+              "        pm.expect(users[0].rating).to.equal(2);\r",
+              "\r",
+              "        pm.expect(users[1]).to.have.property('rating');\r",
+              "        pm.expect(users[1].id).to.equal(1);\r",
+              "        pm.expect(users[1].rating).to.equal(1);\r",
+              "\r",
+              "        pm.expect(users[2]).to.have.property('rating');\r",
+              "        pm.expect(users[2].id).to.equal(3);\r",
+              "        pm.expect(users[2].rating).to.equal(0);\r",
+              "\r",
+              "        pm.expect(users[3]).to.have.property('rating');\r",
+              "        pm.expect(users[3].id).to.equal(4);\r",
+              "        pm.expect(users[3].rating).to.equal(0);\r",
+              "\r",
+              "    }\r",
+              ");\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/users/rating?from=0&size=10",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "rating"
+          ],
+          "query": [
+            {
+              "key": "from",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

@@ -2,7 +2,7 @@ package ru.yandex.practicum.emwservice.service.interfaces;
 
 import ru.yandex.practicum.emwservice.dtos.event.*;
 import ru.yandex.practicum.emwservice.model.Event;
-import ru.yandex.practicum.emwservice.model.util.EventSortOption;
+import ru.yandex.practicum.emwservice.model.util.enums.EventSortOption;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +29,6 @@ public interface EventService {
                                       LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 
     EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest request);
-
-    List<EventShortDto> mapToEventShortDtoList(List<Event> events);
 
     List<Event> getByIds(List<Long> ids);
 }

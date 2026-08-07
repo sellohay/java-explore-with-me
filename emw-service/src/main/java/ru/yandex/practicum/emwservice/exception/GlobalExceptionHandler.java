@@ -71,7 +71,8 @@ public class GlobalExceptionHandler {
             CategoryNotEmptyException.class,
             RequestCreationException.class,
             UpdateRequestException.class,
-            UpdateEventException.class})
+            UpdateEventException.class,
+            RatingCreationException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflictError(final Exception exception) {
         return new ApiError(
