@@ -9,4 +9,5 @@ public class UserDto {
     private String email;
     private Long id;
     private String name;
+    private int rating;
 }

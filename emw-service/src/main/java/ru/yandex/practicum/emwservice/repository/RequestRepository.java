@@ -3,8 +3,8 @@ package ru.yandex.practicum.emwservice.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.yandex.practicum.emwservice.model.Request;
-import ru.yandex.practicum.emwservice.model.util.ConfirmedRequestsCount;
-import ru.yandex.practicum.emwservice.model.util.RequestState;
+import ru.yandex.practicum.emwservice.model.util.projections.ConfirmedRequestsCount;
+import ru.yandex.practicum.emwservice.model.util.enums.RequestState;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +13,8 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     Request save(Request request);
 
     boolean existsByRequesterIdAndEventId(Long requesterId, Long eventId);
+
+    Optional<Request> findByRequesterIdAndEventId(Long requesterId, Long eventId);
 
     Optional<Request> findByIdAndRequesterId(Long id, Long requesterId);
 
@@ -27,7 +29,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     @Query("""
         SELECT r.event.id AS eventId, COUNT(r.id) AS count
         FROM Request r
-        WHERE r.status = ru.yandex.practicum.emwservice.model.util.RequestState.CONFIRMED
+        WHERE r.status = ru.yandex.practicum.emwservice.model.util.enums.RequestState.CONFIRMED
         AND r.event.id IN :eventIds
         GROUP BY r.event.id
     """)

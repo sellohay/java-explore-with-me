@@ -23,10 +23,13 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
     private final EventService eventService;
+    private final EventUtilService eventUtilService;
 
-    public CompilationServiceImpl(CompilationRepository compilationRepository, EventService eventService) {
+    public CompilationServiceImpl(CompilationRepository compilationRepository, EventService eventService,
+                                  EventUtilService eventUtilService) {
         this.compilationRepository = compilationRepository;
         this.eventService = eventService;
+        this.eventUtilService = eventUtilService;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         List<EventShortDto> eventShortDtos = new ArrayList<>();
         if (!events.isEmpty()) {
-            eventShortDtos = eventService.mapToEventShortDtoList(new ArrayList<>(events));
+            eventShortDtos = eventUtilService.mapToEventShortDtoList(new ArrayList<>(events));
         }
         return CompilationMapper.compilationToDto(compilation, eventShortDtos);
     }
@@ -104,7 +107,7 @@ public class CompilationServiceImpl implements CompilationService {
     private CompilationDto convertToDto(Compilation compilation) {
         List<EventShortDto> eventShortDtos = new ArrayList<>();
         if (!compilation.getEvents().isEmpty()) {
-            eventShortDtos = eventService.mapToEventShortDtoList(new ArrayList<>(compilation.getEvents()));
+            eventShortDtos = eventUtilService.mapToEventShortDtoList(new ArrayList<>(compilation.getEvents()));
         }
         return CompilationMapper.compilationToDto(compilation, eventShortDtos);
 
@@ -134,7 +137,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Map<Long, EventShortDto> eventShortDtoMap = new HashMap<>();
         if (!events.isEmpty()) {
-            List<EventShortDto> shortDtos = eventService.mapToEventShortDtoList(new ArrayList<>(events));
+            List<EventShortDto> shortDtos = eventUtilService.mapToEventShortDtoList(new ArrayList<>(events));
             for (EventShortDto dto : shortDtos) {
                 eventShortDtoMap.put(dto.getId(), dto);
             }

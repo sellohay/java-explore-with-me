@@ -9,8 +9,8 @@ import ru.yandex.practicum.emwservice.exception.RequestCreationException;
 import ru.yandex.practicum.emwservice.model.Event;
 import ru.yandex.practicum.emwservice.model.Request;
 import ru.yandex.practicum.emwservice.model.User;
-import ru.yandex.practicum.emwservice.model.util.EventState;
-import ru.yandex.practicum.emwservice.model.util.RequestState;
+import ru.yandex.practicum.emwservice.model.util.enums.EventState;
+import ru.yandex.practicum.emwservice.model.util.enums.RequestState;
 import ru.yandex.practicum.emwservice.repository.RequestRepository;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
 import ru.yandex.practicum.emwservice.service.interfaces.RequestService;
@@ -78,6 +78,14 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(RequestState.CANCELED);
         requestRepository.save(request);
         return RequestMapper.requestToDto(request);
+    }
+
+    @Override
+    public Request getRequestEntity(Long requesterId, Long eventId) {
+        return requestRepository.findByRequesterIdAndEventId(requesterId, eventId).orElseThrow(() ->
+                new NotFoundException("Request for event with id=" +
+                        requesterId + " by user with id=" + requesterId + "was not found")
+        );
     }
 
     private Event validateNewRequest(Long userId, Long eventId) {

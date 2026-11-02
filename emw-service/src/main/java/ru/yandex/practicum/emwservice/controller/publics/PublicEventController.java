@@ -5,7 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.emwservice.dtos.event.EventFullDto;
 import ru.yandex.practicum.emwservice.dtos.event.EventShortDto;
-import ru.yandex.practicum.emwservice.model.util.EventSortOption;
+import ru.yandex.practicum.emwservice.model.util.enums.EventSortOption;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
 import ru.yandex.practicum.statsclient.StatsClient;
 

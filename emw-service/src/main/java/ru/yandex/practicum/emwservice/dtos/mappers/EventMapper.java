@@ -2,7 +2,7 @@ package ru.yandex.practicum.emwservice.dtos.mappers;
 
 import ru.yandex.practicum.emwservice.dtos.event.*;
 import ru.yandex.practicum.emwservice.model.Event;
-import ru.yandex.practicum.emwservice.model.util.EventState;
+import ru.yandex.practicum.emwservice.model.util.enums.EventState;
 
 import java.time.format.DateTimeFormatter;
 

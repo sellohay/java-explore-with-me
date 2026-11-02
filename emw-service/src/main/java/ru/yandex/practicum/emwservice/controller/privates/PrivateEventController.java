@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.emwservice.dtos.event.*;
+import ru.yandex.practicum.emwservice.dtos.rating.RatingDto;
 import ru.yandex.practicum.emwservice.dtos.request.ParticipationRequestDto;
 import ru.yandex.practicum.emwservice.service.interfaces.EventRequestService;
 import ru.yandex.practicum.emwservice.service.interfaces.EventService;
+import ru.yandex.practicum.emwservice.service.interfaces.RatingService;
 
 import java.util.List;
 
@@ -16,10 +18,13 @@ public class PrivateEventController {
 
     private final EventService eventService;
     private final EventRequestService eventRequestService;
+    private final RatingService ratingService;
 
-    public PrivateEventController(EventService eventService, EventRequestService eventRequestService) {
+    public PrivateEventController(EventService eventService, EventRequestService eventRequestService,
+                                  RatingService ratingService) {
         this.eventService = eventService;
         this.eventRequestService = eventRequestService;
+        this.ratingService = ratingService;
     }
 
     @PostMapping
@@ -63,5 +68,28 @@ public class PrivateEventController {
             @Valid @RequestBody EventRequestStatusUpdateRequest request
     ) {
         return eventRequestService.updateEventRequests(userId, eventId, request);
+    }
+
+    @PostMapping("/{eventId}/rate")
+    @ResponseStatus(HttpStatus.CREATED)
+    public RatingDto setRating(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @RequestParam boolean liked) {
+        return ratingService.setRating(userId, eventId, liked);
+    }
+
+    @PatchMapping("/{eventId}/rate")
+    public RatingDto updateRating(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @RequestParam boolean liked) {
+        return ratingService.updateRating(userId, eventId, liked);
+    }
+
+    @DeleteMapping("/{eventId}/rate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRating(@PathVariable Long userId, @PathVariable Long eventId) {
+        ratingService.deleteRating(userId, eventId);
     }
 }

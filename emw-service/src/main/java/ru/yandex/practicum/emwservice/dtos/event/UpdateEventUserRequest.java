@@ -3,7 +3,7 @@ package ru.yandex.practicum.emwservice.dtos.event;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.emwservice.model.util.StateAction;
+import ru.yandex.practicum.emwservice.model.util.enums.StateAction;
 
 
 @Getter

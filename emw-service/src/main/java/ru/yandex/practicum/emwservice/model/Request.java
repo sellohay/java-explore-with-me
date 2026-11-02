@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.emwservice.model.util.RequestState;
+import ru.yandex.practicum.emwservice.model.util.enums.RequestState;
 
 import java.time.LocalDateTime;
 

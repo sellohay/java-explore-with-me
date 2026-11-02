@@ -1,4 +1,4 @@
-package ru.yandex.practicum.emwservice.model.util;
+package ru.yandex.practicum.emwservice.model.util.enums;
 
 public enum StateActionAdmin {
     PUBLISH_EVENT,

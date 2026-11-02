@@ -30,4 +30,6 @@ public class EventShortDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long views;
+
+    private int rating;
 }

@@ -91,4 +91,38 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @EntityGraph(attributePaths = {"category", "initiator"})
     List<Event> findAllByIdIn(List<Long> ids);
+
+
+    @Query(value = """
+        SELECT e.* FROM events e
+        LEFT JOIN ratings r ON e.id = r.event_id
+        WHERE e.state = 'PUBLISHED'
+          AND (:text IS NULL
+               OR LOWER(e.annotation) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%'))
+               OR LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:text AS varchar), '%')))
+          AND (:hasCategories = FALSE OR e.category_id IN (:validCategories))
+          AND (:paid IS NULL OR e.paid = :paid)
+          AND (
+                (CAST(:rangeStart AS timestamp) IS NULL AND CAST(:rangeEnd AS timestamp) IS NULL AND e.event_date > CURRENT_TIMESTAMP)
+                OR (CAST(:rangeStart AS timestamp) IS NOT NULL AND CAST(:rangeEnd AS timestamp) IS NOT NULL AND e.event_date BETWEEN :rangeStart AND :rangeEnd)
+                OR (CAST(:rangeStart AS timestamp) IS NOT NULL AND CAST(:rangeEnd AS timestamp) IS NULL AND e.event_date >= :rangeStart)
+                OR (CAST(:rangeStart AS timestamp) IS NULL AND CAST(:rangeEnd AS timestamp) IS NOT NULL AND e.event_date <= :rangeEnd)
+              )
+          AND (:onlyAvailable = FALSE
+               OR e.participant_limit = 0
+               OR e.participant_limit > (
+                   SELECT COUNT(req.id) FROM requests req
+                   WHERE req.event_id = e.id
+                     AND req.status = 'CONFIRMED'
+               ))
+        GROUP BY e.id
+        ORDER BY COALESCE(SUM(CASE WHEN r.liked = true THEN 1 ELSE -1 END), 0) DESC, e.event_date DESC
+        LIMIT :size
+        OFFSET :from
+    """, nativeQuery = true)
+    List<Event> findPublishedWithFiltersSortRating(String text,
+                                                   Boolean hasCategories, List<Integer> validCategories,
+                                                   Boolean paid, LocalDateTime rangeStart,
+                                                   LocalDateTime rangeEnd, Boolean onlyAvailable,
+                                                   int from, int size);
 }
